@@ -66,6 +66,11 @@
          (flatten)
          (apply q/quad))))
 
+(defn trapezoid-angle [base-tp tp]
+  (if (= (:head base-tp) (cr/bottom (:src tp)))
+    0.0
+    (q/acos (hr/trapezoid-leg-cos base-tp))))
+
 (defn draw-outer [ot angle]
   (q/with-rotation [angle]
 ;    (draw-triangle ot)
@@ -74,11 +79,12 @@
 ;    (draw-triangle (cr/mirror ot))
     (let [tp (hr/triangle->trapezoid ot)]
       (draw-trapezoid tp)
-      (let [ang (q/acos (hr/trapezoid-leg-cos tp))]
+      (let [tp2 (hr/trapezoid->trapezoid tp)
+            ang (trapezoid-angle tp tp2)]
         (q/with-rotation [ang]
-          (draw-trapezoid (hr/trapezoid->trapezoid tp)))
-        (q/with-rotation [ang]
-          (draw-trapezoid (hr/trapezoid->trapezoid tp)))))
+          (draw-trapezoid tp2))
+        (q/with-rotation [(- ang)]
+          (draw-trapezoid tp2))))
 
                                         ;    (let [tp1 (hr/triangle->trapezoid ot)])
 
